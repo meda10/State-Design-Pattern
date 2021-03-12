@@ -40,7 +40,6 @@ class Context {
     set_state(new_state){
         if (new_state in this.all_states) {
             this.current_state = this.all_states[new_state];
-            // console.log('Current State: ' + this.current_state.get_name());
         } else {
             console.log('Undefined State: ' + new_state);
         }

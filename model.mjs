@@ -35,19 +35,19 @@ class Order extends Context {
  */
 class State_create extends State {
     constructor(order){
-        super(order)
-        this.name = 'create'
+        super(order);
+        this.name = 'create';
     }
     order_create_order(){
         console.log('CREATE: Order already created, waiting for payment');
     }
     order_pay(){
         console.log('CREATE: Order was successfully paid');
-        this.change_state('pay')
+        this.change_state('pay');
     }
     order_cancel(){
         console.log('CREATE: Order was canceled');
-        this.change_state('cancel')
+        this.change_state('cancel');
     }
     order_ship() {
         console.log('CREATE: Cannot ship, waiting for payment');
@@ -60,8 +60,8 @@ class State_create extends State {
  */
 class State_pay extends State {
     constructor(order){
-        super(order)
-        this.name = 'pay'
+        super(order);
+        this.name = 'pay';
     }
     order_create_order(){
         console.log('PAY: Order already received, waiting for shipping');
@@ -71,11 +71,11 @@ class State_pay extends State {
     }
     order_cancel(){
         console.log('PAY: Order canceled, your money was refunded');
-        this.change_state('cancel')
+        this.change_state('cancel');
     }
     order_ship() {
         console.log('PAY: Order was successfully shipped');
-        this.change_state('ship')
+        this.change_state('ship');
     }
 }
 
@@ -85,12 +85,12 @@ class State_pay extends State {
  */
 class State_cancel extends State {
     constructor(order){
-        super(order)
-        this.name = 'cancel'
+        super(order);
+        this.name = 'cancel';
     }
     order_create_order(){
         console.log('CANCEL: Creating order');
-        this.change_state('create')
+        this.change_state('create');
     }
     order_pay(){
         console.log('CANCEL: Cannot pay, order does not exist');
@@ -109,12 +109,12 @@ class State_cancel extends State {
  */
 class State_ship extends State {
     constructor(order){
-        super(order)
-        this.name = 'ship'
+        super(order);
+        this.name = 'ship';
     }
     order_create_order(){
         console.log('SHIP: Creating new order');
-        this.change_state('create')
+        this.change_state('create');
     }
     order_pay(){
         console.log('SHIP: Payment already accepted and order was shipped');
@@ -173,7 +173,7 @@ let run = function (){
             case 'exit':
                 return prompt.close();
             case 'current':
-                console.log('Current state: ' + order.get_current_state())
+                console.log('Current state: ' + order.get_current_state());
                 break;
             case 'create':
                 order.order_create_order();
@@ -193,7 +193,6 @@ let run = function (){
         }
         run();
     });
-
 }
 
 /**
@@ -238,5 +237,5 @@ order.add_state(new State_ship(order));
 //setting up initial state
 order.set_state('create');
 
-message()
+message();
 run();
