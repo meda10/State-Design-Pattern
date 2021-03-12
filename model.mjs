@@ -3,7 +3,7 @@
  */
 
 'use strict';
-import { State, Context } from './library_class.mjs';
+import { State, Context } from './library.mjs';
 import * as readline from 'readline';
 
 let prompt = readline.createInterface(process.stdin, process.stdout);
@@ -64,17 +64,17 @@ class State_pay extends State {
         this.name = 'pay'
     }
     order_create_order(){
-        console.log('pay: Order already received, waiting for shipping');
+        console.log('PAY: Order already received, waiting for shipping');
     }
     order_pay(){
-        console.log('pay: Payment already accepted');
+        console.log('PAY: Payment already accepted');
     }
     order_cancel(){
-        console.log('pay: Order canceled, your money was refunded');
+        console.log('PAY: Order canceled, your money was refunded');
         this.change_state('cancel')
     }
     order_ship() {
-        console.log('pay: Order was successfully shipped');
+        console.log('PAY: Order was successfully shipped');
         this.change_state('ship')
     }
 }
@@ -137,8 +137,9 @@ let run = function (){
                 console.log('You can use following commands:');
                 console.log('help -> shows help message');
                 console.log('exit -> exits the program');
+                console.log('current -> displays name of current state');
                 console.log('states -> prints all states');
-                console.log('set -> Allow to set new state manually');
+                console.log('set -> allow to set new state manually');
                 console.log('create -> runs create order on current state');
                 console.log('pay -> runs pay order on current state');
                 console.log('cancel -> runs cancel order on current state');
@@ -147,7 +148,7 @@ let run = function (){
             case 'states':
                 console.log('All states: ' + order.get_all_states());
                 break;
-            case 'state':
+            case 'set':
                 prompt.question("New state: ", function(cmd){
                     switch (cmd){
                         case 'create':
@@ -162,12 +163,18 @@ let run = function (){
                         case 'ship':
                             order.set_state('ship');
                             break;
+                        default:
+                            console.log('Undefined state');
+                            break;
                     }
                     run();
                 });
                 break;
             case 'exit':
                 return prompt.close();
+            case 'current':
+                console.log('Current state: ' + order.get_current_state())
+                break;
             case 'create':
                 order.order_create_order();
                 break;
@@ -200,8 +207,9 @@ let message = function (){
     console.log('You can use following commands:');
     console.log('help -> shows help message');
     console.log('exit -> exits the program');
+    console.log('current -> displays name of current state');
     console.log('states -> prints all states');
-    console.log('set -> Allow to set new state manually');
+    console.log('set -> allow to set new state manually');
     console.log('------------------------------------------------------------');
     console.log('For working with order:');
     console.log('create -> runs create order on current state');
@@ -209,9 +217,12 @@ let message = function (){
     console.log('cancel -> runs cancel order on current state');
     console.log('ship -> runs ship order on current state');
     console.log('------------------------------------------------------------');
+    console.log('Output style:');
+    console.log('CURRENT STATE: message');
+    console.log('------------------------------------------------------------');
     console.log('Tips:');
-    console.log('1) You are starting with created order');
-    console.log('2) You can crate new order when the old one was shipped');
+    console.log('1) You are starting with created order (State CREATED)');
+    console.log('2) You can set state manually with command set');
     console.log('------------------------------------------------------------');
     console.log('------------------------------------------------------------');
     console.log();

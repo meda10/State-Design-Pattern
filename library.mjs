@@ -55,6 +55,10 @@ class Context {
     get_all_states(){
         return Object.keys(this.all_states);
     }
+
+    get_current_state(){
+        return this.current_state.get_name();
+    }
 }
 
 export {State, Context }
