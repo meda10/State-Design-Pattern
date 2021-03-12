@@ -1,55 +1,20 @@
-class State {
-    constructor(context) {
-        this.context = context;
-        this.name = undefined;
-    }
+/**
+ *  @author Petr Medek
+ */
 
-    change_state(state) {
-        this.context.set_state(state);
-    }
+'use strict';
+import { State, Context } from './library_class.mjs';
+import * as readline from 'readline';
 
-    get_name() {
-        return this.name;
-    }
-}
-
-class Context {
-    constructor() {
-        this.all_states = {};
-        this.current_state = undefined;
-    }
-
-    set_state(new_state){
-        if (new_state in this.all_states) {
-            this.current_state = this.all_states[new_state];
-            // console.log('Current State: ' + this.current_state.get_name());
-        } else {
-            console.log('Undefined State: ' + new_state);
-        }
-    }
-
-    add_state(new_state){
-        if (new_state.name !== undefined){
-            this.all_states[new_state.name] = new_state;
-        }
-    }
-
-    get_all_states(){
-        return Object.keys(this.all_states);
-    }
-}
-
-//--------------------------------------
-
-let readline = require('readline');
 let prompt = readline.createInterface(process.stdin, process.stdout);
 
+/***
+ * Class Order extends class Context it adds
+ */
 class Order extends Context {
-
     constructor() {
         super();
     }
-
     order_create_order() {
         return this.current_state.order_create_order();
     }
@@ -64,13 +29,17 @@ class Order extends Context {
     }
 }
 
-class state_create extends State {
+/**
+ * Class State_create is a concrete state, it extends general implementation
+ * of State. It provides own implementation for state-specific methods.
+ */
+class State_create extends State {
     constructor(order){
         super(order)
         this.name = 'create'
     }
     order_create_order(){
-        console.log('CREATE: Order already received, waiting for payment');
+        console.log('CREATE: Order already created, waiting for payment');
     }
     order_pay(){
         console.log('CREATE: Order was successfully paid');
@@ -81,11 +50,15 @@ class state_create extends State {
         this.change_state('cancel')
     }
     order_ship() {
-        console.log('CREATE: Can not ship, waiting for payment');
+        console.log('CREATE: Cannot ship, waiting for payment');
     }
 }
 
-class state_pay extends State {
+/**
+ * Class State_pay is a concrete state, it extends general implementation
+ * of State. It provides own implementation for state-specific methods.
+ */
+class State_pay extends State {
     constructor(order){
         super(order)
         this.name = 'pay'
@@ -106,7 +79,11 @@ class state_pay extends State {
     }
 }
 
-class state_cancel extends State {
+/**
+ * Class State_cancel is a concrete state, it extends general implementation
+ * of State. It provides own implementation for state-specific methods.
+ */
+class State_cancel extends State {
     constructor(order){
         super(order)
         this.name = 'cancel'
@@ -116,23 +93,26 @@ class state_cancel extends State {
         this.change_state('create')
     }
     order_pay(){
-        console.log('CANCEL: Can not pay, order does not exist');
+        console.log('CANCEL: Cannot pay, order does not exist');
     }
     order_cancel(){
-        console.log('CANCEL: Can not cancel, order does not exist');
+        console.log('CANCEL: Cannot cancel, order does not exist');
     }
     order_ship() {
-        console.log('CANCEL: Can not ship, order does not exist');
+        console.log('CANCEL: Cannot ship, order does not exist');
     }
 }
 
-class state_ship extends State {
+/**
+ * Class State_ship is a concrete state, it extends general implementation
+ * of State. It provides own implementation for state-specific methods.
+ */
+class State_ship extends State {
     constructor(order){
         super(order)
         this.name = 'ship'
     }
     order_create_order(){
-        console.log('SHIP: Order was already shipped');
         console.log('SHIP: Creating new order');
         this.change_state('create')
     }
@@ -140,13 +120,16 @@ class state_ship extends State {
         console.log('SHIP: Payment already accepted and order was shipped');
     }
     order_cancel(){
-        console.log('SHIP: Can not cancel, order was already shipped');
+        console.log('SHIP: Cannot cancel, order was already shipped');
     }
     order_ship() {
-        console.log('SHIP: Can not ship, order was already shipped');
+        console.log('SHIP: Cannot ship, order was already shipped');
     }
 }
 
+/**
+ * Main function: runs infinite loop and asks user for commands
+ */
 let run = function (){
     prompt.question("Command: ", function(cmd){
         switch (cmd){
@@ -155,6 +138,7 @@ let run = function (){
                 console.log('help -> shows help message');
                 console.log('exit -> exits the program');
                 console.log('states -> prints all states');
+                console.log('set -> Allow to set new state manually');
                 console.log('create -> runs create order on current state');
                 console.log('pay -> runs pay order on current state');
                 console.log('cancel -> runs cancel order on current state');
@@ -162,6 +146,25 @@ let run = function (){
                 break;
             case 'states':
                 console.log('All states: ' + order.get_all_states());
+                break;
+            case 'state':
+                prompt.question("New state: ", function(cmd){
+                    switch (cmd){
+                        case 'create':
+                            order.set_state('create');
+                            break;
+                        case 'pay':
+                            order.set_state('pay');
+                            break;
+                        case 'cancel':
+                            order.set_state('cancel');
+                            break;
+                        case 'ship':
+                            order.set_state('ship');
+                            break;
+                    }
+                    run();
+                });
                 break;
             case 'exit':
                 return prompt.close();
@@ -186,6 +189,9 @@ let run = function (){
 
 }
 
+/**
+ * Welcome message
+ */
 let message = function (){
     console.log('------------------------------------------------------------');
     console.log('Hello, welcome to order simulator, this program simulates ');
@@ -195,6 +201,7 @@ let message = function (){
     console.log('help -> shows help message');
     console.log('exit -> exits the program');
     console.log('states -> prints all states');
+    console.log('set -> Allow to set new state manually');
     console.log('------------------------------------------------------------');
     console.log('For working with order:');
     console.log('create -> runs create order on current state');
@@ -210,28 +217,16 @@ let message = function (){
     console.log();
 }
 
-
+//Creating new order
 const order = new Order();
-order.add_state(new state_create(order));
-order.add_state(new state_pay(order));
-order.add_state(new state_cancel(order));
-order.add_state(new state_ship(order));
+//Adding states to order
+order.add_state(new State_create(order));
+order.add_state(new State_pay(order));
+order.add_state(new State_cancel(order));
+order.add_state(new State_ship(order));
+//setting up initial state
 order.set_state('create');
 
 message()
 run();
 
-//
-// order.order_create_order();
-// order.order_pay();
-// order.order_pay();
-// order.order_cancel();
-// order.order_ship();
-// order.order_create_order();
-// order.order_pay();
-// order.order_ship();
-// order.order_ship();
-// order.order_create_order();
-// order.order_pay();
-// order.order_cancel();
-//
