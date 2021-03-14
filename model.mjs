@@ -119,10 +119,10 @@ let run = function (){
                 console.log('current -> displays name of current state');
                 console.log('states -> prints all states');
                 console.log('set -> allow to set new state manually');
-                console.log('create -> runs create order on current state');
-                console.log('pay -> runs pay order on current state');
-                console.log('cancel -> runs cancel order on current state');
-                console.log('ship -> runs ship order on current state');
+                console.log('create -> runs create_order on current state');
+                console.log('pay -> runs pay_order on current state');
+                console.log('cancel -> runs cancel_order on current state');
+                console.log('ship -> runs ship_order on current state');
                 break;
             case 'states':
                 console.log('All states: ' + order.get_all_states());
@@ -190,10 +190,10 @@ let message = function (){
     console.log('set -> allow to set new state manually');
     console.log('------------------------------------------------------------');
     console.log('For working with order:');
-    console.log('create -> runs create order on current state');
-    console.log('pay -> runs pay order on current state');
-    console.log('cancel -> runs cancel order on current state');
-    console.log('ship -> runs ship order on current state');
+    console.log('create -> runs create_order on current state');
+    console.log('pay -> runs pay_order on current state');
+    console.log('cancel -> runs cancel_order on current state');
+    console.log('ship -> runs ship_order on current state');
     console.log('------------------------------------------------------------');
     console.log('Output style:');
     console.log('CURRENT STATE: message');
