@@ -7,20 +7,24 @@
 
 /**
  * General implementation od state object
- * Function change_state calls context object and changes current state
  */
 class State {
-    constructor(context) {
+    constructor(context, name) {
         this.context = context;
-        this.name = undefined;
-    }
-
-    change_state(state) {
-        this.context.set_state(state);
+        this.name = name;
+        this.methods = [];
     }
 
     get_name() {
         return this.name;
+    }
+
+    run_method(method, args){
+        if (this.methods.includes(method)) {
+            this[method](args);
+        } else {
+            console.log('Undefined method: ' + method);
+        }
     }
 }
 
@@ -57,6 +61,10 @@ class Context {
 
     get_current_state(){
         return this.current_state.get_name();
+    }
+
+    run(method, args){
+        this.current_state.run_method(method, args);
     }
 }
 

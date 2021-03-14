@@ -8,46 +8,25 @@ import * as readline from 'readline';
 
 let prompt = readline.createInterface(process.stdin, process.stdout);
 
-/***
- * Class Order extends class Context it adds
- */
-class Order extends Context {
-    constructor() {
-        super();
-    }
-    order_create_order() {
-        return this.current_state.order_create_order();
-    }
-    order_pay() {
-        return this.current_state.order_pay();
-    }
-    order_cancel(){
-        return this.current_state.order_cancel();
-    }
-    order_ship() {
-        return this.current_state.order_ship();
-    }
-}
-
 /**
  * Class State_create is a concrete state, it extends general implementation
  * of State. It provides own implementation for state-specific methods.
  */
 class State_create extends State {
     constructor(order){
-        super(order);
-        this.name = 'create';
+        super(order, 'create');
+        this.methods = ['order_create', 'order_pay', 'order_cancel', 'order_ship'];
     }
-    order_create_order(){
+    order_create(){
         console.log('CREATE: Order already created, waiting for payment');
     }
     order_pay(){
         console.log('CREATE: Order was successfully paid');
-        this.change_state('pay');
+        this.context.set_state('pay');
     }
     order_cancel(){
         console.log('CREATE: Order was canceled');
-        this.change_state('cancel');
+        this.context.set_state('cancel');
     }
     order_ship() {
         console.log('CREATE: Cannot ship, waiting for payment');
@@ -60,10 +39,10 @@ class State_create extends State {
  */
 class State_pay extends State {
     constructor(order){
-        super(order);
-        this.name = 'pay';
+        super(order, 'pay');
+        this.methods = ['order_create', 'order_pay', 'order_cancel', 'order_ship'];
     }
-    order_create_order(){
+    order_create(){
         console.log('PAY: Order already received, waiting for shipping');
     }
     order_pay(){
@@ -71,11 +50,11 @@ class State_pay extends State {
     }
     order_cancel(){
         console.log('PAY: Order canceled, your money was refunded');
-        this.change_state('cancel');
+        this.context.set_state('cancel');
     }
     order_ship() {
         console.log('PAY: Order was successfully shipped');
-        this.change_state('ship');
+        this.context.set_state('ship');
     }
 }
 
@@ -85,12 +64,12 @@ class State_pay extends State {
  */
 class State_cancel extends State {
     constructor(order){
-        super(order);
-        this.name = 'cancel';
+        super(order, 'cancel');
+        this.methods = ['order_create', 'order_pay', 'order_cancel', 'order_ship'];
     }
-    order_create_order(){
-        console.log('CANCEL: Creating order');
-        this.change_state('create');
+    order_create(){
+        console.log('CANCEL: Your order was created');
+        this.context.set_state('create');
     }
     order_pay(){
         console.log('CANCEL: Cannot pay, order does not exist');
@@ -109,12 +88,12 @@ class State_cancel extends State {
  */
 class State_ship extends State {
     constructor(order){
-        super(order);
-        this.name = 'ship';
+        super(order, 'ship');
+        this.methods = ['order_create', 'order_pay', 'order_cancel', 'order_ship'];
     }
-    order_create_order(){
-        console.log('SHIP: Creating new order');
-        this.change_state('create');
+    order_create(){
+        console.log('SHIP: Your order was created');
+        this.context.set_state('create');
     }
     order_pay(){
         console.log('SHIP: Payment already accepted and order was shipped');
@@ -176,16 +155,16 @@ let run = function (){
                 console.log('Current state: ' + order.get_current_state());
                 break;
             case 'create':
-                order.order_create_order();
+                order.run('order_create', null);
                 break;
             case 'pay':
-                order.order_pay();
+                order.run('order_pay', null);
                 break;
             case 'cancel':
-                order.order_cancel();
+                order.run('order_cancel', null);
                 break;
             case 'ship':
-                order.order_ship();
+                order.run('order_ship', null);
                 break;
             default:
                 console.log('Undefined command');
@@ -228,7 +207,7 @@ let message = function (){
 }
 
 //Creating new order
-const order = new Order();
+const order = new Context();
 //Adding states to order
 order.add_state(new State_create(order));
 order.add_state(new State_pay(order));
